@@ -24,13 +24,16 @@ class row {
     initRatio() {
         let sumOfChildHeights = 0
         let sumOfChildWidths = 0
+
+        let maxHeight = getFrameWithBiggestHeight(this.childElements).element.height
+
+        this.element.height = maxHeight
+
         this.childElements.forEach(i => {
             i.initRatio()
-            sumOfChildHeights += i.element.height
+            i.setHeight(maxHeight)
             sumOfChildWidths += i.element.width
         })
-
-        this.element.height = sumOfChildHeights
         this.element.width = sumOfChildWidths
     }
 
@@ -55,33 +58,42 @@ class row {
         this.adjustByWidth(width)
     }
 
-    adjustByWidth(width) {
+    makeRectangle() {
         this.childElements.forEach(i =>
             i.initRatio())
 
         let highestElement = getFrameWithBiggestHeight(this.childElements)
-
         // Adjusting all frames to the same height
         let height = highestElement.element.height
-        this.childElements.forEach(i =>
-            i.setHeight(height))
-
-        // Setting current row's width to sum of children widths
         let sumOfChildrenWidths = 0
         this.childElements.forEach(i => {
+            i.setHeight(height)
             sumOfChildrenWidths += i.element.width
         })
+
         this.element.width = sumOfChildrenWidths
+    }
+
+    adjustByWidth(width) {
+        this.childElements.forEach(i => {
+            if (i.element.tagName === 'DIV') {
+                i.makeRectangle()
+            }
+        })
+
+        this.initRatio()
+
 
         // Reducing children widths till the current row's width reaches the needed width
+        let highestElement = getFrameWithBiggestHeight(this.childElements)
+
         if (this.element.width > width) {
             while (this.element.width > width) {
                 let widthDifference = highestElement.decreaseHeight()
                 this.element.width -= widthDifference
                 highestElement = getFrameWithBiggestHeight(this.childElements)
             }
-        }
-        else {
+        } else {
             let minHeightFrame = getFrameWithLeastHeight(this.childElements)
             while (this.element.width < width) {
                 let widthDifference = minHeightFrame.increaseHeight()
@@ -94,20 +106,13 @@ class row {
         //
         // Settings width and border to row
         this.element.style.maxWidth = `${this.element.width}px`
-        if (this.id === 'main')
+        if (this.id === 'main') {
             this.element.style.border = '1px solid darkcyan'
-        console.log(this.element.width)
+            console.log(this.element.width)
+        }
     }
 
     decreaseWidth() {
-        // let widthBefore = this.element.width
-        // let frame = getFrameWithBiggestWidth(this.childElements)
-        // frame.decreaseHeight()
-        // this.element.height--
-        // let currentFrameWithBiggestWidth = getFrameWithBiggestWidth(this.childElements)
-        // this.element.width = currentFrameWithBiggestWidth.element.width
-        // return parseFloat(widthBefore - this.element.width)
-
         let heightBefore = this.element.height
         let frame = getFrameWithBiggestHeight(this.childElements)
         frame.decreaseWidth()
@@ -115,6 +120,32 @@ class row {
         let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
         this.element.height = currentFrameWithBiggestHeight.element.height
         return heightBefore - this.element.height
+    }
+
+    decreaseHeight() {
+        let heightDifference = 0
+        let widthBefore = this.element.width
+        while (heightDifference === 0) {
+            let heightBefore = this.element.height
+            let maxHeightFrame = getFrameWithBiggestHeight(this.childElements)
+            let widthDifference = maxHeightFrame.decreaseHeight()
+            maxHeightFrame = getFrameWithBiggestHeight(this.childElements)
+            this.element.width -= widthDifference
+            this.element.height = maxHeightFrame.element.height
+            heightDifference = heightBefore - this.element.height
+        }
+
+        return widthBefore - this.element.width
+    }
+
+    increaseWidth() {
+        let heightBefore = this.element.height
+        let frame = getFrameWithLeastHeight(this.childElements)
+        frame.increaseWidth()
+        this.element.width++
+        let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
+        this.element.height = currentFrameWithBiggestHeight.element.height
+        return this.element.height - heightBefore
     }
 }
 
@@ -143,15 +174,21 @@ class column {
             i.initRatio()
             sumOfChildHeights += i.element.height
         })
-
         this.element.height = sumOfChildHeights
     }
 
-    setHeight(height) {
+    makeRectangle() {
+        this.childElements.forEach(i => {
+            if (i.element.tagName === 'DIV') {
+                i.makeRectangle()
+            }
+        })
+
         let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
         let maxWidth = maxWidthFrame.element.width
 
         this.childElements.forEach(i => {
+            i.initRatio()
             i.setWidth(maxWidth)
         })
 
@@ -159,11 +196,12 @@ class column {
         this.childElements.forEach(i => sumOfChildHeights += i.element.height)
         this.element.height = sumOfChildHeights
 
-        let sumOfChildWidths = 0
-        this.childElements.forEach(i => sumOfChildWidths += i.element.width)
-        this.element.width = sumOfChildWidths
+        this.element.width = maxWidth
+    }
 
-        if (sumOfChildHeights > height) {
+    setHeight(height) {
+        let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
+        if (this.element.height > height) {
             while (this.element.height > height) {
                 let difference = maxWidthFrame.decreaseHeight()
                 this.element.width -= difference
@@ -186,50 +224,41 @@ class column {
     }
 
     adjustByWidth(width) {
+        this.childElements.forEach(i => {
+            if (i.element.tagName === 'DIV') {
+                i.makeRectangle()
+            }
+        })
 
         // let highestElement = getFrameWithBiggestHeight(this.childElements)
         let maxWidthElement = getFrameWithBiggestWidth(this.childElements)
 
-        console.log(maxWidthElement.element.width)
-
-        console.log(this.childElements)
-
         // Adjusting all frames to the same width
         let maxWidth = maxWidthElement.element.width
+        this.element.width = maxWidth
         this.childElements.forEach(i => {
             i.initRatio()
             i.setWidth(maxWidth)
         })
 
-        while (maxWidthElement.element.width > width) {
-            console.log(maxWidthElement.element.width)
-            let heightDifference = maxWidthElement.decreaseWidth()
-            console.log(maxWidthElement)
-            this.element.height = this.element.height - heightDifference
-            maxWidthElement = getFrameWithBiggestWidth(this.childElements)
+        if (this.element.width > width) {
+            while (this.element.width > width) {
+                let heightDifference = maxWidthElement.decreaseWidth()
+                this.element.height = this.element.height - heightDifference
+                maxWidthElement = getFrameWithBiggestWidth(this.childElements)
+                this.element.width = maxWidthElement.element.width
+            }
+        } else {
+            let minWidthFrame = getFrameWithLeastWidth(this.childElements)
+            while (this.element.width < width) {
+                let heightDifference = minWidthFrame.increaseWidth()
+                this.element.height += heightDifference
+                minWidthFrame = getFrameWithLeastWidth(this.childElements)
+                this.element.width = maxWidthElement.element.width
+            }
         }
 
-        this.childElements.forEach(i => console.log(i.element.width))
-        console.log(this.element.offsetWidth)
-
         this.element.width = maxWidthElement.element.width
-
-        // // Adjusting all frames to the same height
-        // let height = highestElement.element.height
-        // this.childElements.forEach(i => i.setHeight(height))
-
-        // // Setting current row's width to sum of children widths
-        // let sumOfChildrenWidths = 0
-        // this.childElements.forEach(i => sumOfChildrenWidths += i.element.width)
-        // this.element.width = sumOfChildrenWidths
-
-        // // Reducing children widths till the current row's width reaches the needed width
-        // while (this.element.width > width) {
-        //     let widthDifference = highestElement.decreaseHeight()
-        //     this.element.width = parseFloat(this.element.width - widthDifference)
-        //     highestElement = getFrameWithBiggestHeight(this.childElements)
-        // }
-
         this.element.style.maxWidth = `${this.element.width}px`
         this.element.style.maxHeight = `${this.element.height}px`
         this.element.style.border = '1px solid darkcyan'
@@ -237,13 +266,46 @@ class column {
     }
 
     decreaseHeight() {
+
         let widthBefore = this.element.width
         let frame = getFrameWithBiggestWidth(this.childElements)
         frame.decreaseHeight()
         this.element.height--
         let currentFrameWithBiggestWidth = getFrameWithBiggestWidth(this.childElements)
         this.element.width = currentFrameWithBiggestWidth.element.width
-        return parseFloat(widthBefore - this.element.width)
+        this.element.style.maxWidth = `${this.element.width}px`
+        this.element.style.maxHeight = `${this.element.height}px`
+        return widthBefore - this.element.width
+    }
+
+    decreaseWidth() {
+        // let heightDifference = 0
+        // let widthBefore = this.element.width
+        // while (heightDifference === 0) {
+        //     let heightBefore = this.element.height
+        //     let maxHeightFrame = getFrameWithBiggestHeight(this.childElements)
+        //     let widthDifference = maxHeightFrame.decreaseHeight()
+        //     maxHeightFrame = getFrameWithBiggestHeight(this.childElements)
+        //     this.element.width -= widthDifference
+        //     this.element.height = maxHeightFrame.element.height
+        //     heightDifference = heightBefore - this.element.height
+        // }
+        //
+        // return widthBefore - this.element.width
+
+        let widthDifference = 0
+        let heightBefore = this.element.height
+        while (widthDifference === 0) {
+            let widthBefore = this.element.width
+            let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
+            let heightDifference = maxWidthFrame.decreaseWidth()
+            maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
+            this.element.height -= heightDifference
+            this.element.width = maxWidthFrame.width
+            widthDifference = widthBefore - this.element.width
+        }
+
+        return heightBefore - this.element.height
     }
 
     increaseHeight() {
@@ -290,17 +352,9 @@ class image {
     }
 
     decreaseHeight() {
-        if (this.element.id === '5') {
-            console.log(this.element.height)
-            console.log(this.element.width)
-        }
         let widthBefore = this.element.width
         this.element.height--
         this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
-        if (this.element.id === '5') {
-            console.log(this.element.height)
-            console.log(this.element.width)
-        }
         return widthBefore - this.element.width
     }
 
@@ -308,15 +362,21 @@ class image {
         let heightBefore = this.element.height
         this.element.width--
         this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
-        console.log(this.element.height)
         return heightBefore - this.element.height
+    }
+
+    increaseWidth() {
+        let heightBefore = this.element.height
+        this.element.width++
+        this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
+        return this.element.height + heightBefore
     }
 
     increaseHeight() {
         let widthBefore = this.element.width
         this.element.height++
-        this.element.width = this.element.height * this.ratio
-        return parseFloat(this.element.width - widthBefore)
+        this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
+        return this.element.width - widthBefore
     }
 }
 
@@ -421,21 +481,22 @@ let testAll1 = () => {
     img5.element.id = '5'
     let img6 = img('https://img.freepik.com/free-photo/fluffy-kitten-sitting-grass-staring-sunset-playful-generated-by-artificial-intelligence_25030-67836.jpg')
     img6.element.id = '6'
-    c.add(img5).add(img6)
-    r.add(img1).add(img2).add(c).add(img4)
-
     let rc = new row()
-    rc.add(img1).add(img3)
-    c.add(img5).add(rc).add(img6)
+    rc.add(img2).add(img3)
 
-    // console.log(r)
-    console.log(c)
+    c.add(img5).add(rc).add(img6)
+    r.add(img1).add(c).add(img4)
+
+    // c.add(img5).add(r).add(img6)
+
+    console.log(r)
+    // console.log(c)
     // clearElement('root')
-    // showStoryboard(r, 'images')
-    showStoryboard(c, 'images')
+    showStoryboard(r, 'images')
+    // showStoryboard(c, 'images')
 }
 
 let draw = () => {
-    // drawStoryboard(r, {width: 1000})
-    drawStoryboard(c, {width: 500})
+    drawStoryboard(r, {width: 1000})
+    // drawStoryboard(c, {width: 500})
 }
