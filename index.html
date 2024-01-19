@@ -8,11 +8,16 @@
     <div id="root" style="display: flex; flex-direction: column">
         <div>
             <h1>Hello!</h1>
+            <button onclick="{console.log(document.getElementById('main').offsetWidth)}">Get width</button>
             <button onclick="testImagePut()">Put image</button>
             <button onclick="testRow1()">Put row</button>
-            <button onclick="testAll1()">Show storyboard</button>
-            <button onclick="draw()">Adjust</button>
-            <button onclick="{console.log(document.getElementById('main').offsetWidth)}">Get width</button>
+            <button onclick="testAll1()">Show storyboard 1</button>
+            <button onclick="testAll2()">Show storyboard 2</button>
+            <button onclick="testAll3()">Show storyboard 3</button>
+            <button onclick="drawRow()">Adjust row</button>
+            <button onclick="drawCol()">Adjust column</button>
+            <label for="toFillGaps">Fill gaps?</label>
+            <input id="toFillGaps" type="checkbox">
         </div>
         <div id="images" style="margin: 20px;">
         </div>

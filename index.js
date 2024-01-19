@@ -82,7 +82,6 @@ class row {
 
     adjustByWidth(width) {
         this.makeRectangle()
-
         // Reducing children widths till the current row's width reaches the needed width
         let highestElement = getFrameWithBiggestHeight(this.childElements)
         console.log(this.element.width)
@@ -488,7 +487,55 @@ let testAll1 = () => {
     // showStoryboard(c, 'images')
 }
 
-let draw = () => {
+let testAll2 = () => {
+    let sideImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let sideImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let colImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
+    let colImg2 = img('https://static.vecteezy.com/system/resources/thumbnails/028/339/934/small/portrait-of-a-cute-ragdoll-cat-against-a-pastel-pink-background-generative-ai-photo.jpg')
+    let colRowImg1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
+    let colRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let colRowColImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
+    let colRowColImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+    let cr = new row()
+    let crc = new column()
+
+    crc.add(colRowColImg1).add(colRowColImg2)
+
+    cr.add(colRowImg1).add(colRowImg2).add(crc)
+
+    c.add(colImg1).add(cr).add(colImg2)
+
+    r.add(sideImg1).add(c).add(sideImg2)
+
+    showStoryboard(r, 'images')
+}
+
+let testAll3 = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowColImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
+    let rowColImg2 = img('https://static.vecteezy.com/system/resources/thumbnails/028/339/934/small/portrait-of-a-cute-ragdoll-cat-against-a-pastel-pink-background-generative-ai-photo.jpg')
+    let rowColRowImg1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
+    let rowColRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
+    let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+
+    let rcr = new row()
+    rcr.add(rowColRowImg1).add(rowColRowImg2)
+    let rc = new column()
+    rc.add(rowColImg1).add(rcr).add(rowColImg2)
+    r.add(rowImg1).add(rc).add(rowImg2)
+    c.add(colImg1).add(r).add(colImg2)
+
+    showStoryboard(c, 'images')
+}
+
+let drawRow = () => {
     drawStoryboard(r, {width: 2000})
-    // drawStoryboard(c, {width: 500})
+    // drawStoryboard(c, {width: 1000})
+}
+
+let drawCol = () => {
+    drawStoryboard(c, {width: 1000})
+
 }
