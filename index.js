@@ -70,12 +70,15 @@ class row {
         // if (this.element.id === 'main')
         this.makeRectangle()
 
+        // return
+
         // Reducing children widths till the current row's width reaches the needed width
         let highestElement = getFrameWithBiggestHeight(this.childElements)
         console.log(this.element.width)
         console.log(width)
         if (this.element.width > width) {
             while (this.element.width > width) {
+                console.log(highestElement)
                 let widthDifference = highestElement.decreaseHeight()
                 this.element.width -= widthDifference
                 highestElement = getFrameWithBiggestHeight(this.childElements)
@@ -111,6 +114,8 @@ class row {
         this.element.width--
         let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
         this.element.height = currentFrameWithBiggestHeight.element.height
+        this.element.style.maxWidth = `${this.element.width}px`
+        this.element.style.maxHeight = `${this.element.height}px`
         return heightBefore - this.element.height
     }
 
@@ -124,7 +129,11 @@ class row {
             maxHeightFrame = getFrameWithBiggestHeight(this.childElements)
             this.element.width -= widthDifference
             this.element.height = maxHeightFrame.element.height
+            this.element.style.maxWidth = `${this.element.width}px`
+            this.element.style.maxHeight = `${this.element.height}px`
             heightDifference = heightBefore - this.element.height
+            console.log(this.element.height)
+            console.log(this.element.width)
         }
 
         return widthBefore - this.element.width
@@ -141,6 +150,8 @@ class row {
             let widthDifference = minHeightFrame.increaseHeight()
             this.element.width += widthDifference
             this.element.height = getFrameWithBiggestHeight(this.childElements).element.height
+            this.element.style.maxWidth = `${this.element.width}px`
+            this.element.style.maxHeight = `${this.element.height}px`
             heightDifference = this.element.height - heightBefore
         }
 
@@ -154,6 +165,8 @@ class row {
         this.element.width++
         let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
         this.element.height = currentFrameWithBiggestHeight.element.height
+        this.element.style.maxWidth = `${this.element.width}px`
+        this.element.style.maxHeight = `${this.element.height}px`
         console.log(this.element.width)
         return this.element.height - heightBefore
     }
@@ -270,8 +283,8 @@ class column {
 
         let widthBefore = this.element.width
         let frame = getFrameWithBiggestWidth(this.childElements)
-        frame.decreaseHeight()
         this.element.height--
+        frame.decreaseHeight()
         console.log(this.childElements)
         let currentFrameWithBiggestWidth = getFrameWithBiggestWidth(this.childElements)
         this.element.width = currentFrameWithBiggestWidth.element.width
@@ -290,6 +303,8 @@ class column {
             maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
             this.element.height -= heightDifference
             this.element.width = maxWidthFrame.element.width
+            this.element.style.maxWidth = `${this.element.width}px`
+            this.element.style.maxHeight = `${this.element.height}px`
             widthDifference = widthBefore - this.element.width
         }
         console.log(widthDifference)
@@ -350,6 +365,8 @@ class image {
         let widthBefore = this.element.width
         this.element.height--
         this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
+        console.log(this.element.height)
+        console.log(this.element.width)
         return widthBefore - this.element.width
     }
 
@@ -542,16 +559,38 @@ const testAll4 = () => {
     showStoryboard(c, 'images')
 }
 
-const rowWithOnlyColumn = () => {
+const columnRowWithOnlyColumn = () => {
     let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
-    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
+    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg')
     let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let rc = new column()
 
     rc.add(rowImg1).add(rowImg2)
     r.add(rc)
     c.add(colImg1).add(r).add(colImg2)
+    showStoryboard(c, 'images')
+}
+
+const rowColWithOnlyRow = () => {
+    let rowColRowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowColRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg')
+    let rowImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+    let cr = new row()
+
+    cr.add(rowColRowImg1).add(rowColRowImg2)
+    c.add(cr)
+    r.add(rowImg1).add(c).add(rowImg2)
+    showStoryboard(r, 'images')
+}
+
+const rowIncrease = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+
+    r.add(rowImg1).add(rowImg2)
+    c.add(r)
     showStoryboard(c, 'images')
 }
 
