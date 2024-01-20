@@ -37,23 +37,6 @@ class row {
     }
 
     setWidth(width) {
-        // let maxHeightFrame = getFrameWithBiggestHeight()
-        // let maxHeight = maxHeightFrame.element.height
-        //
-        // let sumOfChildWidths = 0
-        // let sumOfChildHeights = 0
-        //
-        // this.childElements.forEach(i => {
-        //     i.setWidth(maxWidth)
-        //     sumOfChildWidths += i.element.width
-        //     sumOfChildHeights += i.element.height
-        // })
-        //
-        // if (this.element.width > width) {
-        //     while (this.element.width > width) {
-        //
-        //     }
-        // }
         this.adjustByWidth(width)
     }
 
@@ -65,8 +48,11 @@ class row {
                 i.initRatio()
             }
         })
+        this.childElements.forEach(i => console.log(i))
 
         let highestElement = getFrameWithBiggestHeight(this.childElements)
+        console.log(highestElement)
+
         // Adjusting all frames to the same maxHeight
         let maxHeight = highestElement.element.height
         let sumOfChildrenWidths = 0
@@ -75,13 +61,15 @@ class row {
             sumOfChildrenWidths += i.element.width
         })
 
-        console.log(this.element.width)
         this.element.width = sumOfChildrenWidths
+        console.log(this.element.width)
         this.element.height = maxHeight
     }
 
     adjustByWidth(width) {
+        // if (this.element.id === 'main')
         this.makeRectangle()
+
         // Reducing children widths till the current row's width reaches the needed width
         let highestElement = getFrameWithBiggestHeight(this.childElements)
         console.log(this.element.width)
@@ -91,13 +79,15 @@ class row {
                 let widthDifference = highestElement.decreaseHeight()
                 this.element.width -= widthDifference
                 highestElement = getFrameWithBiggestHeight(this.childElements)
+                this.element.height = highestElement.element.height
             }
         } else {
             let minHeightFrame = getFrameWithLeastHeight(this.childElements)
             while (this.element.width < width) {
                 let widthDifference = minHeightFrame.increaseHeight()
                 this.element.width += widthDifference
-                highestElement = getFrameWithLeastHeight(this.childElements)
+                minHeightFrame = getFrameWithLeastHeight(this.childElements)
+                this.element.height = getFrameWithBiggestHeight(this.childElements).element.height
             }
         }
 
@@ -138,6 +128,23 @@ class row {
         }
 
         return widthBefore - this.element.width
+    }
+
+    increaseHeight() {
+        console.log("row inc h")
+        console.log(this)
+        let heightDifference = 0
+        let widthBefore = this.element.width
+        while (heightDifference === 0) {
+            let heightBefore = this.element.height
+            let minHeightFrame = getFrameWithLeastHeight(this.childElements)
+            let widthDifference = minHeightFrame.increaseHeight()
+            this.element.width += widthDifference
+            this.element.height = getFrameWithBiggestHeight(this.childElements).element.height
+            heightDifference = this.element.height - heightBefore
+        }
+
+        return this.element.width - widthBefore
     }
 
     increaseWidth() {
@@ -188,20 +195,20 @@ class column {
                 i.initRatio()
             }
         })
-
         let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
         let maxWidth = maxWidthFrame.element.width
-
+        console.log(maxWidth)
 
         let sumOfChildHeights = 0
         this.childElements.forEach(i => {
             i.setWidth(maxWidth)
             sumOfChildHeights += i.element.height
-
         })
 
         this.element.height = sumOfChildHeights
         this.element.width = maxWidth
+        console.log(this.element.width)
+        console.log(this.element.height)
     }
 
     setHeight(height) {
@@ -230,7 +237,6 @@ class column {
 
     adjustByWidth(width) {
         this.makeRectangle()
-
         this.childElements.forEach(i =>
             console.log(i.element.width))
 
@@ -293,11 +299,15 @@ class column {
     increaseHeight() {
         let widthBefore = this.element.width
         let frame = getFrameWithLeastWidth(this.childElements)
-        frame.increaseHeight()
         this.element.height++
-        let currentFrameWithBiggestWidth = getFrameWithBiggestWidth(this.childElements)
-        this.element.width = currentFrameWithBiggestWidth.element.width
-        return parseFloat(this.element.width - widthBefore)
+        frame.increaseHeight()
+        this.element.width = getFrameWithBiggestWidth(this.childElements).element.width
+        this.element.style.maxWidth = `${this.element.width}px`
+        this.element.style.maxHeight = `${this.element.height}px`
+        // throw new Error('idi nahui')
+        // if (this.element.height > 5000)
+        //     throw new Error('idi nahui')
+        return this.element.width - widthBefore
     }
 }
 
@@ -331,6 +341,9 @@ class image {
     setWidth(width) {
         this.element.width = width
         this.element.height = width * this.reverseRatio
+        console.log(width)
+        console.log(this.element.width)
+        console.log(this.element.height)
     }
 
     decreaseHeight() {
@@ -354,13 +367,20 @@ class image {
         this.element.width++
         console.log(this.element.width)
         this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
+        // debugger;
         return this.element.height - heightBefore
     }
 
     increaseHeight() {
         let widthBefore = this.element.width
+        console.log(this)
+        console.log(this.element.height)
         this.element.height++
+        console.log(this.element.height)
+        console.log(widthBefore)
         this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
+        console.log(this.element.width)
+        // debugger;
         return this.element.width - widthBefore
     }
 }
@@ -433,61 +453,34 @@ let getFrameWithLeastWidth = (frames) => {
             minWidth = i.element.width
         }
     })
-    console.log(minWidthFrame)
     return minWidthFrame
 }
 
-let testImagePut = () => {
-    let image = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    document.getElementById('root').appendChild(image.element)
-}
-
-let testRow1 = () => {
-    let r = new row()
-    let img1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    r.add(img1)
-    let img2 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    r.add(img2)
-
-    document.getElementById('root').appendChild(r.element)
-}
-
-let r = new row('main')
+let r = new row()
 let c = new column()
 
-let testAll1 = () => {
+const testAll1 = () => {
     let img1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    img1.element.id = '1'
     let img2 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    img2.element.id = '2'
     let img3 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
-    img3.element.id = '3'
     let img4 = img('https://static.vecteezy.com/system/resources/thumbnails/028/339/934/small/portrait-of-a-cute-ragdoll-cat-against-a-pastel-pink-background-generative-ai-photo.jpg')
-    img4.element.id = '4'
-    c.element.setAttribute('id', 'col')
     let img5 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
     let img6 = img('https://img.freepik.com/free-photo/fluffy-kitten-sitting-grass-staring-sunset-playful-generated-by-artificial-intelligence_25030-67836.jpg')
     let img7 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
     let img8 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let rc = new row()
-    rc.add(img2).add(img3)
     let cr = new column()
+    rc.add(img2).add(img3)
     cr.add(img7).add(img8)
     rc.add(cr)
 
     c.add(img5).add(rc).add(img6)
     r.add(img1).add(c).add(img4)
 
-    // c.add(img5).add(r).add(img6)
-
-    console.log(r)
-    // console.log(c)
-    // clearElement('root')
     showStoryboard(r, 'images')
-    // showStoryboard(c, 'images')
 }
 
-let testAll2 = () => {
+const testAll2 = () => {
     let sideImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let sideImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let colImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
@@ -500,17 +493,14 @@ let testAll2 = () => {
     let crc = new column()
 
     crc.add(colRowColImg1).add(colRowColImg2)
-
     cr.add(colRowImg1).add(colRowImg2).add(crc)
-
     c.add(colImg1).add(cr).add(colImg2)
-
     r.add(sideImg1).add(c).add(sideImg2)
 
     showStoryboard(r, 'images')
 }
 
-let testAll3 = () => {
+const testAll3 = () => {
     let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let rowColImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
@@ -519,10 +509,10 @@ let testAll3 = () => {
     let rowColRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
     let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
-
     let rcr = new row()
-    rcr.add(rowColRowImg1).add(rowColRowImg2)
     let rc = new column()
+
+    rcr.add(rowColRowImg1).add(rowColRowImg2)
     rc.add(rowColImg1).add(rcr).add(rowColImg2)
     r.add(rowImg1).add(rc).add(rowImg2)
     c.add(colImg1).add(r).add(colImg2)
@@ -530,12 +520,63 @@ let testAll3 = () => {
     showStoryboard(c, 'images')
 }
 
+const testAll4 = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowColImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
+    let rowColImg2 = img('https://static.vecteezy.com/system/resources/thumbnails/028/339/934/small/portrait-of-a-cute-ragdoll-cat-against-a-pastel-pink-background-generative-ai-photo.jpg')
+    let rowColRowImg1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
+    let rowColRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
+    let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+    let rcr = new row()
+    let rc1 = new column()
+    let rc2 = new column()
+
+    rcr.add(rowColRowImg1).add(rowColRowImg2)
+    rc1.add(rowColImg1).add(rcr).add(rowColImg2)
+    rc2.add(rowImg1).add(rowImg2)
+    r.add(rc1).add(rc2)
+    c.add(colImg1).add(r).add(colImg2)
+
+    showStoryboard(c, 'images')
+}
+
+const rowWithOnlyColumn = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
+    let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+    let rc = new column()
+
+    rc.add(rowImg1).add(rowImg2)
+    r.add(rc)
+    c.add(colImg1).add(r).add(colImg2)
+    showStoryboard(c, 'images')
+}
+
+const columnIncrease = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+
+    c.add(rowImg1).add(rowImg2)
+    r.add(c)
+    showStoryboard(r, 'images')
+}
+
 let drawRow = () => {
-    drawStoryboard(r, {width: 2000})
-    // drawStoryboard(c, {width: 1000})
+    let toFillGaps = document.getElementById('toFillGaps').value
+    let width = parseInt(document.getElementById('width').value)
+    drawStoryboard(r, {width: width})
+    // if (toFillGaps)
+    //     r.fillGaps()
 }
 
 let drawCol = () => {
-    drawStoryboard(c, {width: 1000})
-
+    let width = parseInt(document.getElementById('width').value)
+    console.log(width)
+    let toFillGaps = document.getElementById('toFillGaps').value
+    drawStoryboard(c, {width: width})
+    // if (toFillGaps)
+    //     c.fillGaps()
 }

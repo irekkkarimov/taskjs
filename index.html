@@ -9,17 +9,22 @@
         <div>
             <h1>Hello!</h1>
             <button onclick="{console.log(document.getElementById('main').offsetWidth)}">Get width</button>
-            <button onclick="testImagePut()">Put image</button>
-            <button onclick="testRow1()">Put row</button>
-            <button onclick="testAll1()">Show storyboard 1</button>
-            <button onclick="testAll2()">Show storyboard 2</button>
-            <button onclick="testAll3()">Show storyboard 3</button>
+<!--            <button onclick="document.getElementById('hui').height++">hui++</button>-->
+            <button onclick="testAll1()">Show storyboard 1 (row)</button>
+            <button onclick="testAll2()">Show storyboard 2 (row)</button>
+            <button onclick="testAll3()">Show storyboard 3 (column)</button>
+            <button onclick="testAll4()">Show storyboard 4 (column)</button>
+            <button onclick="rowWithOnlyColumn()">Show storyboard 4 (column, row with only column)</button>
+            <button onclick="columnIncrease()">Column grow</button>
             <button onclick="drawRow()">Adjust row</button>
             <button onclick="drawCol()">Adjust column</button>
+            <label for="width">Width:</label>
+            <input id="width" type="number" style="width: 50px" value="1000"></input>
             <label for="toFillGaps">Fill gaps?</label>
-            <input id="toFillGaps" type="checkbox">
+            <input id="toFillGaps" type="checkbox" title="Заполнить щели во вложенных элементах (расстянуть)">
         </div>
         <div id="images" style="margin: 20px;">
+<!--            <img src='https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg' id="hui"/>-->
         </div>
         <script src="index.js"></script>
     </div>
