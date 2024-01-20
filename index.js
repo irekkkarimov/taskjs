@@ -40,6 +40,63 @@ class row {
         this.adjustByWidth(width)
     }
 
+    fillGaps() {
+        this.childElements.forEach(i => {
+            if (i.element.tagName === 'DIV')
+                i.fillGaps()
+        })
+
+        let highestFrame = getFrameWithBiggestHeight(this.childElements)
+        let height = highestFrame.element.height
+
+        this.childElements.forEach(i => {
+            if (i.element.height !== height) {
+                if (i.element.hasAttribute('src'))
+                    i.element.height = height
+                else
+                    i.setOnlyHeight(height)
+            }
+        })
+    }
+
+    setOnlyWidth(width) {
+        let elementWidth = this.element.width
+        let highestRatioFrame;
+        let highestRatio = 0
+
+        this.childElements.forEach(i => {
+            let ratio = parseFloat(i.element.width / i.element.height)
+            if (ratio > highestRatio) {
+                highestRatioFrame = i
+                highestRatio = ratio
+            }
+        })
+
+        let newWidestFrameWidth  = highestRatioFrame.element.width + (width - elementWidth)
+
+        if (highestRatioFrame.element.hasAttribute('src')) {
+            highestRatioFrame.element.width = newWidestFrameWidth
+        }
+        else {
+            highestRatioFrame.setOnlyWidth(newWidestFrameWidth)
+        }
+
+        this.element.width = width
+        this.element.style.maxWidth = `${this.element.width}px`
+    }
+
+    setOnlyHeight(height) {
+        this.childElements.forEach(i => {
+            if (i.element.hasAttribute('src'))
+                i.element.height = height
+            else
+                i.setOnlyHeight(height)
+        })
+
+        this.element.height = height
+        this.element.style.maxHeight = `${this.element.height}px`
+    }
+
     makeRectangle() {
         this.childElements.forEach(i => {
             if (i.element.tagName === 'DIV') {
@@ -48,10 +105,8 @@ class row {
                 i.initRatio()
             }
         })
-        this.childElements.forEach(i => console.log(i))
 
         let highestElement = getFrameWithBiggestHeight(this.childElements)
-        console.log(highestElement)
 
         // Adjusting all frames to the same maxHeight
         let maxHeight = highestElement.element.height
@@ -62,7 +117,6 @@ class row {
         })
 
         this.element.width = sumOfChildrenWidths
-        console.log(this.element.width)
         this.element.height = maxHeight
     }
 
@@ -74,11 +128,8 @@ class row {
 
         // Reducing children widths till the current row's width reaches the needed width
         let highestElement = getFrameWithBiggestHeight(this.childElements)
-        console.log(this.element.width)
-        console.log(width)
         if (this.element.width > width) {
             while (this.element.width > width) {
-                console.log(highestElement)
                 let widthDifference = highestElement.decreaseHeight()
                 this.element.width -= widthDifference
                 highestElement = getFrameWithBiggestHeight(this.childElements)
@@ -107,10 +158,7 @@ class row {
     decreaseWidth() {
         let heightBefore = this.element.height
         let frame = getFrameWithBiggestHeight(this.childElements)
-        console.log(frame)
-        console.log(frame.element.width)
         frame.decreaseWidth()
-        console.log(frame.element.width)
         this.element.width--
         let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
         this.element.height = currentFrameWithBiggestHeight.element.height
@@ -132,16 +180,12 @@ class row {
             this.element.style.maxWidth = `${this.element.width}px`
             this.element.style.maxHeight = `${this.element.height}px`
             heightDifference = heightBefore - this.element.height
-            console.log(this.element.height)
-            console.log(this.element.width)
         }
 
         return widthBefore - this.element.width
     }
 
     increaseHeight() {
-        console.log("row inc h")
-        console.log(this)
         let heightDifference = 0
         let widthBefore = this.element.width
         while (heightDifference === 0) {
@@ -167,7 +211,6 @@ class row {
         this.element.height = currentFrameWithBiggestHeight.element.height
         this.element.style.maxWidth = `${this.element.width}px`
         this.element.style.maxHeight = `${this.element.height}px`
-        console.log(this.element.width)
         return this.element.height - heightBefore
     }
 }
@@ -200,6 +243,62 @@ class column {
         this.element.height = sumOfChildHeights
     }
 
+    fillGaps() {
+        this.childElements.forEach(i => {
+            if (i.element.tagName === 'DIV')
+                i.fillGaps()
+        })
+
+        let widestFrame = getFrameWithBiggestWidth(this.childElements)
+        let maxWidth = widestFrame.element.width
+
+        this.childElements.forEach(i => {
+            if (i.element.width < maxWidth) {
+                if (i.element.hasAttribute('src'))
+                    i.element.width = maxWidth
+                else
+                    i.setOnlyWidth(maxWidth)
+            }
+        })
+    }
+
+    setOnlyHeight(height) {
+        let elementHeight = this.element.height
+        let lowestRatioFrame;
+        let lowestRatio = 1000
+
+        this.childElements.forEach(i => {
+            let ratio = parseFloat(i.element.width / i.element.height)
+            if (ratio < lowestRatio) {
+                lowestRatioFrame = i
+                lowestRatio = ratio
+            }
+        })
+
+        let newLowestFrameHeight = lowestRatioFrame.element.height + (height - elementHeight)
+        if (lowestRatioFrame.element.hasAttribute('src')) {
+            lowestRatioFrame.element.height = newLowestFrameHeight
+        }
+        else {
+            lowestRatioFrame.setOnlyHeight(newLowestFrameHeight)
+        }
+
+        this.element.height = height
+        this.element.style.maxHeight = `${this.element.height}px`
+    }
+
+    setOnlyWidth(width) {
+        this.childElements.forEach(i => {
+            if (i.element.hasAttribute('src'))
+                i.element.width = width
+            else
+                i.setOnlyWidth(width)
+        })
+
+        this.element.width = width
+        this.element.style.maxWidth = `${this.element.width}px`
+    }
+
     makeRectangle() {
         this.childElements.forEach(i => {
             if (i.element.tagName === 'DIV') {
@@ -210,7 +309,6 @@ class column {
         })
         let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
         let maxWidth = maxWidthFrame.element.width
-        console.log(maxWidth)
 
         let sumOfChildHeights = 0
         this.childElements.forEach(i => {
@@ -220,8 +318,6 @@ class column {
 
         this.element.height = sumOfChildHeights
         this.element.width = maxWidth
-        console.log(this.element.width)
-        console.log(this.element.height)
     }
 
     setHeight(height) {
@@ -250,8 +346,6 @@ class column {
 
     adjustByWidth(width) {
         this.makeRectangle()
-        this.childElements.forEach(i =>
-            console.log(i.element.width))
 
         if (this.element.width > width) {
             let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
@@ -276,7 +370,6 @@ class column {
         this.element.style.maxWidth = `${this.element.width}px`
         this.element.style.maxHeight = `${this.element.height}px`
         this.element.style.border = '1px solid darkcyan'
-        console.log(this.element.width)
     }
 
     decreaseHeight() {
@@ -307,7 +400,6 @@ class column {
             this.element.style.maxHeight = `${this.element.height}px`
             widthDifference = widthBefore - this.element.width
         }
-        console.log(widthDifference)
         return heightBefore - this.element.height
     }
 
@@ -356,17 +448,12 @@ class image {
     setWidth(width) {
         this.element.width = width
         this.element.height = width * this.reverseRatio
-        console.log(width)
-        console.log(this.element.width)
-        console.log(this.element.height)
     }
 
     decreaseHeight() {
         let widthBefore = this.element.width
         this.element.height--
         this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
-        console.log(this.element.height)
-        console.log(this.element.width)
         return widthBefore - this.element.width
     }
 
@@ -379,10 +466,7 @@ class image {
 
     increaseWidth() {
         let heightBefore = this.element.height
-        console.log(this.element)
-        console.log(this.element.width)
         this.element.width++
-        console.log(this.element.width)
         this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
         // debugger;
         return this.element.height - heightBefore
@@ -390,13 +474,8 @@ class image {
 
     increaseHeight() {
         let widthBefore = this.element.width
-        console.log(this)
-        console.log(this.element.height)
         this.element.height++
-        console.log(this.element.height)
-        console.log(widthBefore)
         this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
-        console.log(this.element.width)
         // debugger;
         return this.element.width - widthBefore
     }
@@ -473,8 +552,8 @@ let getFrameWithLeastWidth = (frames) => {
     return minWidthFrame
 }
 
-let r = new row()
-let c = new column()
+let r;
+let c;
 
 const testAll1 = () => {
     let img1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
@@ -487,6 +566,9 @@ const testAll1 = () => {
     let img8 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let rc = new row()
     let cr = new column()
+    c = new column()
+    r = new row('main')
+
     rc.add(img2).add(img3)
     cr.add(img7).add(img8)
     rc.add(cr)
@@ -508,6 +590,8 @@ const testAll2 = () => {
     let colRowColImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let cr = new row()
     let crc = new column()
+    c = new column()
+    r = new row('main')
 
     crc.add(colRowColImg1).add(colRowColImg2)
     cr.add(colRowImg1).add(colRowImg2).add(crc)
@@ -528,6 +612,8 @@ const testAll3 = () => {
     let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let rcr = new row()
     let rc = new column()
+    c = new column('main')
+    r = new row()
 
     rcr.add(rowColRowImg1).add(rowColRowImg2)
     rc.add(rowColImg1).add(rcr).add(rowColImg2)
@@ -549,6 +635,8 @@ const testAll4 = () => {
     let rcr = new row()
     let rc1 = new column()
     let rc2 = new column()
+    c = new column('main')
+    r = new row()
 
     rcr.add(rowColRowImg1).add(rowColRowImg2)
     rc1.add(rowColImg1).add(rcr).add(rowColImg2)
@@ -565,6 +653,8 @@ const columnRowWithOnlyColumn = () => {
     let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg')
     let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let rc = new column()
+    c = new column('main')
+    r = new row()
 
     rc.add(rowImg1).add(rowImg2)
     r.add(rc)
@@ -578,6 +668,8 @@ const rowColWithOnlyRow = () => {
     let rowImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg')
     let rowImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
     let cr = new row()
+    c = new column()
+    r = new row('main')
 
     cr.add(rowColRowImg1).add(rowColRowImg2)
     c.add(cr)
@@ -588,6 +680,8 @@ const rowColWithOnlyRow = () => {
 const rowIncrease = () => {
     let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    c = new column('main')
+    r = new row()
 
     r.add(rowImg1).add(rowImg2)
     c.add(r)
@@ -597,6 +691,8 @@ const rowIncrease = () => {
 const columnIncrease = () => {
     let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
     let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    c = new column()
+    r = new row('main')
 
     c.add(rowImg1).add(rowImg2)
     r.add(c)
@@ -604,18 +700,17 @@ const columnIncrease = () => {
 }
 
 let drawRow = () => {
-    let toFillGaps = document.getElementById('toFillGaps').value
+    let toFillGaps = document.getElementById('toFillGaps').value === 'on'
     let width = parseInt(document.getElementById('width').value)
     drawStoryboard(r, {width: width})
-    // if (toFillGaps)
-    //     r.fillGaps()
+    if (toFillGaps)
+        r.fillGaps()
 }
 
 let drawCol = () => {
     let width = parseInt(document.getElementById('width').value)
-    console.log(width)
-    let toFillGaps = document.getElementById('toFillGaps').value
+    let toFillGaps = document.getElementById('toFillGaps').value === 'on'
     drawStoryboard(c, {width: width})
-    // if (toFillGaps)
-    //     c.fillGaps()
+    if (toFillGaps)
+        c.fillGaps()
 }
