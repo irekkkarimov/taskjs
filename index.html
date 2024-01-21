@@ -9,17 +9,16 @@
         <div>
             <h1>Hello!</h1>
             <button onclick="{console.log(document.getElementById('main').offsetWidth)}">Get width</button>
-            <button onclick="testAll1()">Show storyboard 1 (row)</button>
-            <button onclick="testAll2()">Show storyboard 2 (row)</button>
-            <button onclick="testAll3()">Show storyboard 3 (column)</button>
-            <button onclick="testAll4()">Show storyboard 4 (column)</button>
-            <button onclick="columnRowWithOnlyColumn()">Show storyboard 4 (column, row with only column)</button>
-            <button onclick="rowColWithOnlyRow()">Show storyboard 5 (row, col with only row)</button>
-            <button onclick="columnIncrease()">Column grow</button>
-            <button onclick="rowIncrease()">Row grow (column with only row)</button>
-            <button onclick="rowPadding()">Row paddings</button>
-            <button onclick="drawRow()">Adjust row</button>
-            <button onclick="drawCol()">Adjust column</button>
+            <button onclick="testAll1()">Load storyboard 1 (row)</button>
+            <button onclick="testAll2()">Load storyboard 2 (row)</button>
+            <button onclick="testAll3()">Load storyboard 3 (column)</button>
+            <button onclick="testAll4()">Load storyboard 4 (column)</button>
+            <button onclick="columnRowWithOnlyColumn()">Load storyboard 4 (column, row with only column)</button>
+            <button onclick="rowColWithOnlyRow()">Load storyboard 5 (row, col with only row)</button>
+            <button onclick="columnIncrease()">Load Column grow (row with only column)</button>
+            <button onclick="rowIncrease()">Load Row grow (column with only row)</button>
+            <button onclick="rowPadding()">Load Row paddings</button>
+            <button onclick="draw()">Draw Storyboard</button>
             <label for="width">Width:</label>
             <input id="width" type="number" style="width: 50px" value="1000"></input>
             <label for="toFillGaps">Fill gaps?</label>
@@ -27,7 +26,7 @@
         </div>
         <div id="images" style="margin: 20px;">
         </div>
-        <script src="index3.js"></script>
+        <script src="index.js"></script>
     </div>
 </body>
 </html>
