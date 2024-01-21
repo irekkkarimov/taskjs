@@ -7,8 +7,10 @@ class row {
 
     constructor(id) {
         this.element = document.createElement('div')
-        if (id !== null)
+        if (id !== undefined && id !== null) {
             this.id = id
+            console.log(this.id)
+        }
         this.element.id = this.id
         this.element.style.display = 'flex'
         this.element.style.flexDirection = 'row'
@@ -120,7 +122,6 @@ class row {
     }
 
     makeRectangle(paddingTop, paddingRight, paddingBottom, paddingLeft) {
-        console.log(paddingBottom)
         this.childElements.forEach(i => {
             if (i.element.tagName === 'DIV') {
                 i.makeRectangle(paddingTop, paddingRight, paddingBottom, paddingLeft)
@@ -130,25 +131,17 @@ class row {
         })
 
         let highestElement = getFrameWithBiggestHeight(this.childElements)
-        console.log(this.childElements)
-        console.log(highestElement)
         // Adjusting all frames to the same maxHeight
         let maxHeight = highestElement.allHeight
-        console.log(highestElement.allHeight)
         let sumOfChildrenWidths = 0
         this.childElements.forEach(i => {
             i.setHeight(maxHeight)
             sumOfChildrenWidths += i.allWidth
-            console.log(i.allWidth)
         })
-        console.log(sumOfChildrenWidths)
 
         this.UpdateWidth(sumOfChildrenWidths)
         this.UpdateHeight(maxHeight)
         this.UpdateMaxSize()
-
-        console.log(this.allHeight)
-        console.log(this.allWidth)
     }
 
     adjustByWidth(width, paddingTop, paddingRight, paddingBottom, paddingLeft) {
@@ -182,6 +175,7 @@ class row {
         this.UpdateMaxSize()
         if (this.id === 'main') {
             this.element.style.border = '1px solid darkcyan'
+            this.element.style.backgroundColor = '#000'
             console.log(this.allWidth)
         }
     }
@@ -189,10 +183,15 @@ class row {
     decreaseWidth() {
         let heightBefore = this.allHeight
         let frame = getFrameWithBiggestHeight(this.childElements)
+        console.log(frame)
         frame.decreaseWidth()
+        console.log(frame)
         this.element.width--
         this.UpdateSize()
         let currentFrameWithBiggestHeight = getFrameWithBiggestHeight(this.childElements)
+        console.log(currentFrameWithBiggestHeight)
+        console.log(frame.allWidth)
+        console.log(this.element.width)
         this.UpdateHeight(currentFrameWithBiggestHeight.allHeight)
         this.UpdateMaxSize()
         return heightBefore - this.allHeight
@@ -248,13 +247,18 @@ class row {
 
 
 class column {
+    id
     element
     childElements
     allHeight = 0
     allWidth = 0
 
-    constructor() {
+    constructor(id) {
         this.element = document.createElement('div')
+        if (id !== undefined && id !== null) {
+            this.id = id
+            console.log(this.id)
+        }
         this.element.style.display = 'flex'
         this.element.style.flexDirection = 'column'
         this.element.style.alignItems = 'flex-start'
@@ -353,7 +357,6 @@ class column {
     }
 
     makeRectangle(paddingTop, paddingRight, paddingBottom, paddingLeft) {
-        console.log(paddingBottom)
         this.childElements.forEach(i => {
             if (i.element.tagName === 'DIV') {
                 i.makeRectangle(paddingTop, paddingRight, paddingBottom, paddingLeft)
@@ -361,9 +364,9 @@ class column {
                 i.initRatio(paddingTop, paddingRight, paddingBottom, paddingLeft)
             }
         })
+
         let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
         let maxWidth = maxWidthFrame.allWidth
-
         let sumOfChildHeights = 0
         this.childElements.forEach(i => {
             i.setWidth(maxWidth)
@@ -399,7 +402,6 @@ class column {
         }
 
         this.UpdateMaxSize()
-        // this.element.style.border = '1px solid darkcyan'
     }
 
     adjustByWidth(width, paddingTop, paddingRight, paddingBottom, paddingLeft) {
@@ -431,7 +433,11 @@ class column {
         let maxWidthFrame =  getFrameWithBiggestWidth(this.childElements)
         this.UpdateWidth(maxWidthFrame.allWidth)
         this.UpdateMaxSize()
-        this.element.style.border = '1px solid darkcyan'
+        if (this.id === 'main') {
+            this.element.style.border = '1px solid darkcyan'
+            this.element.style.backgroundColor = '#000'
+            console.log(this.allWidth)
+        }
     }
 
     decreaseHeight() {
@@ -441,7 +447,6 @@ class column {
         frame.decreaseHeight()
         this.element.height--
         this.UpdateSize()
-        console.log(this.childElements)
         let currentFrameWithBiggestWidth = getFrameWithBiggestWidth(this.childElements)
         this.UpdateWidth(currentFrameWithBiggestWidth.allWidth)
         this.UpdateMaxSize()
@@ -499,24 +504,28 @@ class image {
     }
 
     UpdateWidth(width) {
-        this.element.width = width
-        this.allWidth = this.element.width + this.widthPaddings
+        this.element.width = width - this.widthPaddings
+        this.allWidth = width
     }
 
     UpdateHeight(height) {
-        this.element.height = height
-        this.allHeight = this.element.height + this.heightPaddings
+        this.element.height = height - this.heightPaddings
+        this.allHeight = height
     }
 
     initRatio(paddingTop, paddingRight, paddingBottom, paddingLeft) {
-        if (paddingTop !== 0)
+        if (paddingTop !== 0) {
             this.element.style.paddingTop = `${paddingTop}px`
-        if (paddingRight !== 0)
+        }
+        if (paddingRight !== 0) {
             this.element.style.paddingRight = `${paddingRight}px`
-        if (paddingBottom !== 0)
+        }
+        if (paddingBottom !== 0) {
             this.element.style.paddingBottom = `${paddingBottom}px`
-        if (paddingLeft !== 0)
+        }
+        if (paddingLeft !== 0) {
             this.element.style.paddingLeft = `${paddingLeft}px`
+        }
 
         this.heightPaddings += paddingTop
         this.heightPaddings += paddingBottom
@@ -526,11 +535,6 @@ class image {
         this.ratio = parseFloat(this.element.width / this.element.height)
         this.reverseRatio = parseFloat(this.element.height / this.element.width)
     }
-
-    // adjust(width) {
-    //     this.element.width = width
-    //     this.allWidth = this.allHeight * this.ratio
-    // }
 
     setHeight(height) {
         this.UpdateHeight(height)
@@ -545,31 +549,32 @@ class image {
     decreaseHeight() {
         let widthBefore = this.allWidth
         this.element.height--
+        this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
         this.UpdateSize()
-        this.UpdateWidth(Math.ceil(parseFloat(this.element.height * this.ratio)))
         return widthBefore - this.allWidth
     }
 
     decreaseWidth() {
         let heightBefore = this.allHeight
-        this.UpdateWidth(this.element.width - 1)
-        this.UpdateHeight(Math.ceil(parseFloat(this.element.width * this.reverseRatio)))
+        this.element.width--
+        this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
+        this.UpdateSize()
         return heightBefore - this.allHeight
     }
 
     increaseWidth() {
         let heightBefore = this.allHeight
         this.element.width++
+        this.element.height = Math.ceil(parseFloat(this.element.width * this.reverseRatio))
         this.UpdateSize()
-        this.UpdateHeight(Math.ceil(parseFloat(this.element.width * this.reverseRatio)))
         return this.allHeight - heightBefore
     }
 
     increaseHeight() {
         let widthBefore = this.allWidth
         this.element.height++
+        Math.ceil(parseFloat(this.element.height * this.ratio))
         this.UpdateSize()
-        this.UpdateWidth(Math.ceil(parseFloat(this.element.height * this.ratio)))
         return this.allWidth - widthBefore
     }
 }
@@ -580,7 +585,6 @@ let img = (filename) => {
 
 let drawStoryboard = (obj, props) => {
     let {width, paddingTop, paddingRight, paddingBottom, paddingLeft} = props
-    console.log(paddingBottom)
 
     if (paddingTop === undefined)
         paddingTop = 0
@@ -800,17 +804,38 @@ const columnIncrease = () => {
     showStoryboard(r, 'images')
 }
 
+const rowPadding = () => {
+    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg2 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
+    let colImg1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
+    let colImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+
+    r = new row('main')
+    c = new column()
+    c.add(colImg1).add(colImg2)
+    r.add(c)
+    showStoryboard(r, 'images')
+}
+
 let drawRow = () => {
-    let toFillGaps = document.getElementById('toFillGaps').value === 'on'
     let width = parseInt(document.getElementById('width').value)
-    drawStoryboard(r, {width: width})
-    if (toFillGaps)
+    let toFillGaps = document.getElementById('toFillGaps').checked
+    drawStoryboard(r, {
+        width: width,
+        paddingTop: 5,
+        paddingRight: 10,
+        paddingBottom: 5,
+        paddingLeft: 10
+    })
+    if (toFillGaps) {
+        console.log('lox')
         r.fillGaps()
+    }
 }
 
 let drawCol = () => {
     let width = parseInt(document.getElementById('width').value)
-    let toFillGaps = document.getElementById('toFillGaps').value === 'on'
+    let toFillGaps = document.getElementById('toFillGaps').checked
     drawStoryboard(c, {
         width: width,
         paddingTop: 5,
