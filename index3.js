@@ -162,6 +162,7 @@ class row {
         } else {
             let minHeightFrame = getFrameWithLeastHeight(this.childElements)
             while (this.allWidth < width) {
+                console.log(this)
                 let widthDifference = minHeightFrame.increaseHeight()
                 this.element.width += widthDifference
                 this.UpdateSize()
@@ -365,6 +366,7 @@ class column {
             }
         })
 
+        console.log('pizda3')
         let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
         let maxWidth = maxWidthFrame.allWidth
         let sumOfChildHeights = 0
@@ -372,7 +374,7 @@ class column {
             i.setWidth(maxWidth)
             sumOfChildHeights += i.allHeight
         })
-
+        console.log(this)
         this.UpdateHeight(sumOfChildHeights)
         this.UpdateWidth(maxWidth)
         this.UpdateMaxSize()
@@ -411,6 +413,7 @@ class column {
         if (this.allWidth > width) {
             let maxWidthFrame = getFrameWithBiggestWidth(this.childElements)
             while (this.allWidth > width) {
+                console.log('pizda')
                 let heightDifference = maxWidthFrame.decreaseWidth()
                 this.element.height -= heightDifference
                 this.UpdateSize()
@@ -421,6 +424,7 @@ class column {
         } else {
             let minWidthFrame = getFrameWithLeastWidth(this.childElements)
             while (this.allWidth < width) {
+                console.log('pizda')
                 let heightDifference = minWidthFrame.increaseWidth()
                 this.element.height += heightDifference
                 this.UpdateSize()
@@ -573,7 +577,7 @@ class image {
     increaseHeight() {
         let widthBefore = this.allWidth
         this.element.height++
-        Math.ceil(parseFloat(this.element.height * this.ratio))
+        this.element.width = Math.ceil(parseFloat(this.element.height * this.ratio))
         this.UpdateSize()
         return this.allWidth - widthBefore
     }
@@ -729,14 +733,14 @@ const testAll3 = () => {
 }
 
 const testAll4 = () => {
-    let rowImg1 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
-    let rowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
+    let rowImg1 = img('./images/highcat.jpeg')
+    let rowImg2 = img('./images/highcat.jpeg')
     let rowColImg1 = img('https://img.freepik.com/free-photo/cute-domestic-kitten-sits-window-staring-outside-generative-ai_188544-12519.jpg')
-    let rowColImg2 = img('https://static.vecteezy.com/system/resources/thumbnails/028/339/934/small/portrait-of-a-cute-ragdoll-cat-against-a-pastel-pink-background-generative-ai-photo.jpg')
-    let rowColRowImg1 = img('https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg')
-    let rowColRowImg2 = img('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ8OdwAomKCWIpt2NwJ6gnjvf_LuND39nMAzaEmf9kPw&s')
-    let colImg1 = img('https://hips.hearstapps.com/hmg-prod/images/beautiful-smooth-haired-red-cat-lies-on-the-sofa-royalty-free-image-1678488026.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*')
-    let colImg2 = img('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg')
+    let rowColImg2 = img('./images/pinkcat.jpg')
+    let rowColRowImg1 = img('./images/catonwhitebackground.jpg')
+    let rowColRowImg2 = img('./images/highcat.jpeg')
+    let colImg1 = img('./images/orangecatlying.jpg')
+    let colImg2 = img('./images/littlecatsmiling.jpg')
     let rcr = new row()
     let rc1 = new column()
     let rc2 = new column()
@@ -840,7 +844,8 @@ let drawCol = () => {
         width: width,
         paddingTop: 5,
         paddingRight: 10,
-        paddingBottom: 20
+        paddingBottom: 5,
+        paddingLeft: 10
     })
     if (toFillGaps)
         c.fillGaps()
